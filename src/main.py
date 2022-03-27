@@ -13,7 +13,7 @@
 #
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+""""""  #
 """
 The Script downloads files from specified playlists.
 """
@@ -22,15 +22,12 @@ import os
 import socket
 
 from time import sleep
+# it can have matter to use youtube_dl or ytpy
 from pytube import Playlist, YouTube, exceptions
 from urllib.error import HTTPError
 
-#: The file name with a list of playlists.
-PLAYLIST_FILE = '../config/playlists.txt'
-#: The file name with a list of files which needs skip.
-VIDEO_SKIP_FILE = '../config/skipvideos.txt'
-#: A path to the directory where files are saves.
-VODEO_DIR = '../files/'
+from config.config import CHANNELS_FILE, PLAYLIST_FILE, \
+    VIDEOS_FILE, VODEO_DIR, VIDEO_SKIP_FILE
 
 
 def set_skip_video(sVideoURL):
@@ -73,7 +70,7 @@ def get_video(sURLPlayList):
     print(f'\n{oPlayList.title}\n{oPlayList.playlist_url}')
     # sleep(2)
 
-    sPlayListDir = f'{VODEO_DIR}{oPlayList.title}'
+    sPlayListDir = f'{VODEO_DIR}/{oPlayList.title}'
     if not os.path.exists(sPlayListDir):
         os.makedirs(sPlayListDir)
 
