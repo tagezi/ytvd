@@ -21,7 +21,7 @@ It is configuration file to control script behavior.
 #: The directory where config files locate except for this.
 CONF_DIR = '../config'
 #: A path to the directory where files are saves.
-VODEO_DIR = '../files'
+VIODEO_DIR = '../files'
 
 
 #: The file name with a list of YouTube channels.

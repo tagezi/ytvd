@@ -13,10 +13,6 @@
 #
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-""""""  #
-"""
-The Script downloads files from specified playlists.
-"""
 
 import os
 import socket
@@ -27,18 +23,22 @@ from pytube import Playlist, YouTube, exceptions
 from urllib.error import HTTPError
 
 from config.config import CHANNELS_FILE, PLAYLIST_FILE, \
-    VIDEOS_FILE, VODEO_DIR, VIDEO_SKIP_FILE
+    VIDEOS_FILE, VIODEO_DIR, VIDEO_SKIP_FILE
+""""""  #
+"""
+The Script downloads files from specified playlists.
+"""
 
 
-def set_skip_video(sVideoURL):
+def set_skip_video(sURL):
     """ Function writes video URL in file with a list of files
     which needs skipping.
 
-    :param sVideoURL: An URL which need add to the file.
-    :type sVideoURL: str
+    :param sURL: An URL which need add to the file.
+    :type sURL: str
     """
     with open(VIDEO_SKIP_FILE, 'a') as fSkipVideo:
-        fSkipVideo.write(sVideoURL)
+        fSkipVideo.write(sURL)
 
 
 def get_list(sFileName):
@@ -57,57 +57,110 @@ def get_list(sFileName):
     return lList
 
 
-def get_video(sURLPlayList):
-    """ Function takes playlist of YuoTube and downloads all files from it.
-    Additionally, the function types messages about the progress of
+def get_video(sURL, sDir, Prefix=0, bRepeat=True):
+    """ Function takes a video by URL and saves it in directory.
+
+    :param sURL: An URL of the video on YouTube.
+    :type sURL: str
+
+    :param sDir: A directory where the video will save. For a video of the
+                playlist it is a name of the playlist. Otherwise, it is
+                a *Videos* directory.
+    :type sDir: str
+
+    :param Prefix: It is number as int for substitution at the beginning
+                  of the line.
+    :type Prefix: int or None
+
+    :param bRepeat: It points that downloading should be repeated.
+    :type bRepeat: bool
+
+    :return: Returns two parameters as dict. The parameter *repeat* with value
+            *True* points that downloading of the videos needs repeat.
+            The parameter *prefix* points on index number of videos
+            in the playlist.
+    :rtype: dict[int, bool]
+    """
+    try:
+        oYouTube = YouTube(sURL)
+        print(f'{str(Prefix)}. {oYouTube.title}')
+    except exceptions.VideoUnavailable:
+        print(f'Видео по адресу {sURL} недоступно. Пропускаем.')
+    else:
+        print(f'Скачиваю видео по адресу: {sURL}')
+        oYouTube.streams.filter(file_extension='mp4')
+        oYouStream = oYouTube.streams.get_highest_resolution()
+        try:
+            if not os.path.exists(sDir):
+                os.makedirs(sDir)
+
+            sPrefix = ''
+            if type(Prefix) == int:
+                sPrefix = f'{str(Prefix)}. '
+
+            oYouStream.download(
+                filename=f'{sPrefix}{oYouStream.default_filename}',
+                output_path=sDir
+            )
+        except socket.error:
+            print(f'socket.error: Ошибка скачивания видео {sURL}')
+        except HTTPError:
+            print(f'HTTPError: Ошибка скачивания видео {sURL}')
+        else:
+            bRepeat = False
+            set_skip_video(f'{sURL}\n')
+            if type(Prefix) == int:
+                Prefix = Prefix + 1
+    finally:
+        sleep(15)
+    return {'prefix': Prefix, 'repeat': bRepeat}
+
+
+def get_playlist_videos(sURL):
+    """ Function takes playlist's url of YuoTube and downloads all files
+    from it. Additionally, the function types messages about the progress of
     the downloading of the files.
 
     :param sURLPlayList: An URl to the playlist with files
                          which needs downloading.
     :type sURLPlayList: str
     """
-    oPlayList = Playlist(sURLPlayList)
+    oPlayList = Playlist(sURL)
+    sPlayListDir = f'{VIODEO_DIR}/{oPlayList.title}'
     print(f'\n{oPlayList.title}\n{oPlayList.playlist_url}')
-    # sleep(2)
 
-    sPlayListDir = f'{VODEO_DIR}/{oPlayList.title}'
-    if not os.path.exists(sPlayListDir):
-        os.makedirs(sPlayListDir)
-
-    num = 1
-    for sVideoURL in oPlayList.video_urls:
-        bRepeat = True
+    dValues = {'prefix': 1, 'repeat': True}
+    for sURLVideo in oPlayList.video_urls:
         lSkipVideo = get_list(VIDEO_SKIP_FILE)
-        if sVideoURL in lSkipVideo:
-            num = num + 1
-        while bRepeat and sVideoURL not in lSkipVideo:
-            try:
-                oYouTube = YouTube(sVideoURL)
-                print(f'{str(num)}. {oYouTube.title}')
-            except exceptions.VideoUnavailable:
-                print(f'Видео по адресу {sVideoURL} недоступно. Пропускаем.')
-                sleep(15)
-            else:
-                print(f'Скачиваю виде по адресу: {sVideoURL}')
-                oYouTube.streams.filter(file_extension='mp4')
-                oYouStream = oYouTube.streams.get_highest_resolution()
-                try:
-                    oYouStream.download(
-                        filename=f'{str(num)}. {oYouStream.default_filename}',
-                        output_path=sPlayListDir
-                    )
-                except socket.error:
-                    print(f'socket.error: Ошибка скачивания видео {sVideoURL}')
-                except HTTPError:
-                    print(f'HTTPError: Ошибка скачивания видео {sVideoURL}')
-                else:
-                    bRepeat = False
-                    set_skip_video(f'{sVideoURL}\n')
-                    num = num + 1
-                finally:
-                    sleep(15)
+        if sURLVideo in lSkipVideo:
+            dValues['prefix'] = dValues['prefix'] + 1
+        dValues['repeat'] = True
+        while dValues['repeat'] and sURLVideo not in lSkipVideo:
+            dValues = get_video(sURLVideo, sPlayListDir, dValues['prefix'])
 
 
 if __name__ == '__main__':
-    for sPlayListURL in get_list(PLAYLIST_FILE):
-        get_video(sPlayListURL)
+    lPlayListURLs = get_list(PLAYLIST_FILE)
+    if lPlayListURLs:
+        for sPlayListURL in lPlayListURLs:
+            get_playlist_videos(sPlayListURL)
+    lVideoURLs = get_list(VIDEOS_FILE)
+    if lVideoURLs:
+        for sVideoURL in lVideoURLs:
+            get_video(sVideoURL, VIODEO_DIR)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
