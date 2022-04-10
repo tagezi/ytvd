@@ -14,47 +14,20 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+The Script downloads videos by URL.
+"""
+
 import os
 import socket
 
 from time import sleep
 # it can have matter to use youtube_dl or ytpy
-from pytube import Playlist, YouTube, exceptions
+from pytube import YouTube, exceptions
 from urllib.error import HTTPError
 
-from config.config import CHANNELS_FILE, PLAYLIST_FILE, \
-    VIDEOS_FILE, VIODEO_DIR, VIDEO_SKIP_FILE
-""""""  #
-"""
-The Script downloads files from specified playlists.
-"""
-
-
-def set_skip_video(sURL):
-    """ Function writes video URL in file with a list of files
-    which needs skipping.
-
-    :param sURL: An URL which need add to the file.
-    :type sURL: str
-    """
-    with open(VIDEO_SKIP_FILE, 'a') as fSkipVideo:
-        fSkipVideo.write(sURL)
-
-
-def get_list(sFileName):
-    """ Function opens a file and creates lList from lines of the file.
-
-    :param sFileName: A file name with lines from which needs to make the list.
-    :type sFileName: str
-    :return: The lList with lines from the file.
-    :rtype: list
-    """
-    lList = []
-    with open(sFileName, 'r') as fList:
-        for line in fList:
-            lList.append(line.strip('\n').strip())
-
-    return lList
+from src.ytvd_files import set_skip_video
+from src.ytvd_subtitles import get_subtitles
 
 
 def get_video(sURL, sDir, Prefix=0, bRepeat=True):
@@ -98,10 +71,9 @@ def get_video(sURL, sDir, Prefix=0, bRepeat=True):
             if type(Prefix) == int:
                 sPrefix = f'{str(Prefix)}. '
 
-            oYouStream.download(
-                filename=f'{sPrefix}{oYouStream.default_filename}',
-                output_path=sDir
-            )
+            fFileName = f'{sPrefix}{oYouStream.default_filename}'
+            oYouStream.download(filename=fFileName, output_path=sDir)
+            get_subtitles(sDir, fFileName, sURL)
         except socket.error:
             print(f'socket.error: Ошибка скачивания видео {sURL}')
         except HTTPError:
@@ -116,51 +88,5 @@ def get_video(sURL, sDir, Prefix=0, bRepeat=True):
     return {'prefix': Prefix, 'repeat': bRepeat}
 
 
-def get_playlist_videos(sURL):
-    """ Function takes playlist's url of YuoTube and downloads all files
-    from it. Additionally, the function types messages about the progress of
-    the downloading of the files.
-
-    :param sURLPlayList: An URl to the playlist with files
-                         which needs downloading.
-    :type sURLPlayList: str
-    """
-    oPlayList = Playlist(sURL)
-    sPlayListDir = f'{VIODEO_DIR}/{oPlayList.title}'
-    print(f'\n{oPlayList.title}\n{oPlayList.playlist_url}')
-
-    dValues = {'prefix': 1, 'repeat': True}
-    for sURLVideo in oPlayList.video_urls:
-        lSkipVideo = get_list(VIDEO_SKIP_FILE)
-        if sURLVideo in lSkipVideo:
-            dValues['prefix'] = dValues['prefix'] + 1
-        dValues['repeat'] = True
-        while dValues['repeat'] and sURLVideo not in lSkipVideo:
-            dValues = get_video(sURLVideo, sPlayListDir, dValues['prefix'])
-
-
 if __name__ == '__main__':
-    lPlayListURLs = get_list(PLAYLIST_FILE)
-    if lPlayListURLs:
-        for sPlayListURL in lPlayListURLs:
-            get_playlist_videos(sPlayListURL)
-    lVideoURLs = get_list(VIDEOS_FILE)
-    if lVideoURLs:
-        for sVideoURL in lVideoURLs:
-            get_video(sVideoURL, VIODEO_DIR)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    pass

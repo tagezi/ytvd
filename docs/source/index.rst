@@ -18,12 +18,13 @@ User documentation
 YTVD is YouTube Video Downloader
 ================================
 
-It's not new library for downloading videos from YouTube. YTVD is script which
-uses *PyTube like API* for access to playlists and videos, and slightly expands
-the functionality. For example, you can create a list with playlists and
-download all videos from it. Also, you can download only new videos from this
-list, if you already have downloaded videos from these playlists. Videos are
-saved in a directory with the name of the playlist.
+It's not new library for downloading videos or video subtitles from YouTube.
+YTVD is script which uses *PyTube like API* and *youtube_transcript_api* for
+access to playlists and videos, and slightly expands the functionality. For
+example, you can create a list with playlists and download all videos from it.
+Also, you can download only new videos and video subtitles from this list,
+if you already have downloaded videos from these playlists. Videos are saved
+in a directory with the name of the playlist.
 
 Install and run YTDV
 ====================
@@ -50,7 +51,7 @@ Run script:
 
 .. prompt:: bash
 
-   python3 ./src/main.py
+   python3 ./ytvd.py
 
 Setup configuration
 ===================
@@ -60,21 +61,32 @@ and can be found in `config` directory. Add links on your playlists in this file
 each on a new line. If you want to skip a few files, you can add link to that
 videos in `slipvideos.txt`. It is located in the same directory.
 
+If you want to download only separated videos, you can add links to video to
+`videos.txt` file.
+
 When a video from a playlist is downloaded, a link to the video is added to
 the file `slipvideos.txt`. So, next time when you run script, only new videos
 in playlist will download.
 
-There is lines in main.py file:
+There is lines in `./config/config.py` file:
 
-.. code-block:: python
+.. autodata:: config.config.CONFIG_PATH
 
-   #: The file name with a list of playlists.
-   PLAYLIST_FILE = '../config/playlists.txt'
-   #: The file name with a list of files which needs skip.
-   VIDEO_SKIP_FILE = '../config/skipvideos.txt'
-   #: A path to the directory where files are saves.
+.. autodata:: config.config.VIDEO_PATH
+
+.. autodata:: config.config.CHANNELS_FILE
+
+.. autodata:: config.config.PLAYLIST_FILE
+
+.. autodata:: config.config.VIDEOS_FILE
+
+.. autodata:: config.config.VIDEO_SKIP_FILES
 
 You can change, if you need.
+
+.. automodule:: config.config
+   :members:
+   :exclude-members: CONFIG_DIR, VIDEO_DIR
 
 ------------------
 Code documentation
@@ -83,10 +95,11 @@ Code documentation
 Constants
 =========
 
-.. autodata:: config.config.CONF_DIR
+These
 
-.. autodata:: config.config.VODEO_DIR
+.. autodata:: config.config.CONFIG_PATH
 
+.. autodata:: config.config.VIDEO_PATH
 
 .. autodata:: config.config.CHANNELS_FILE
 
@@ -94,14 +107,18 @@ Constants
 
 .. autodata:: config.config.VIDEOS_FILE
 
-.. autodata:: config.config.VIDEO_SKIP_FILE
+.. autodata:: config.config.VIDEO_SKIP_FILES
 
 Function
 ========
 
-.. automodule:: main
+.. automodule:: ytvd_files
    :members:
-   :exclude-members: PLAYLIST_FILE, VIDEO_SKIP_FILE, VODEO_DIR
+   :exclude-members: get_list
+
+.. automodule:: ytvd_video
+   :members:
+   :exclude-members: set_skip_video, write_subtitles, get_video
 
 ------------------
 Indices and tables
