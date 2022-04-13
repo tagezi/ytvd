@@ -21,6 +21,23 @@ import os
 from config.config import VIDEO_SKIP_FILES
 
 
+def clean_skip_file():
+    """ The Function clean file for skipping videos. """
+    with open(VIDEO_SKIP_FILES, 'w') as fSkipVideo:
+        fSkipVideo.write('')
+
+
+def create_dir(sDir):
+    """ The function creates directory, if it does not exist.
+
+    :param sDir: A name of the directory.
+    :type sDir: str
+    :return: None
+    """
+    if not os.path.exists(sDir):
+        os.makedirs(sDir)
+
+
 def get_list(sFileName):
     """ Function opens a file and creates lList from lines of the file.
 
@@ -37,21 +54,21 @@ def get_list(sFileName):
     return lList
 
 
-def set_skip_video(sURL):
-    """ Function writes video URL in file with a list of files
-    which needs skipping.
+def get_video_dir(sVideoPath, sVideoDir):
+    """ The function gives human-readable name for concatenate parts of path
+    for directories to one string.
 
-    :param sURL: An URL which need add to the file.
-    :type sURL: str
+    :param sVideoPath: The start of path. It comes from a constant in
+                       config file or an argument in command line.
+    :type sVideoPath: str
+    :param sVideoDir: The end of path. It is hard-coded parameter,
+                      but sVideoDir can be specified in an argument of
+                      command line.
+    :type sVideoDir: str
+    :return: The path in system rules.
+    :rtype: str
     """
-    with open(VIDEO_SKIP_FILES, 'a') as fSkipVideo:
-        fSkipVideo.write(sURL)
-
-
-def clean_skip_file():
-    """ The Function clean file for skipping videos. """
-    with open(VIDEO_SKIP_FILES, 'w') as fSkipVideo:
-        fSkipVideo.write('')
+    return os.path.join(sVideoPath, sVideoDir)
 
 
 def save_subtitles(sDir, sFile, oJOSNSubtitles):
@@ -69,15 +86,15 @@ def save_subtitles(sDir, sFile, oJOSNSubtitles):
         json_file.write(oJOSNSubtitles)
 
 
-def create_dir(sDir):
-    """ The function creates directory, if it does not exist.
+def set_skip_video(sURL):
+    """ Function writes video URL in file with a list of files
+    which needs skipping.
 
-    :param sDir: A name of the directory.
-    :type sDir: str
-    :return: None
+    :param sURL: An URL which need add to the file.
+    :type sURL: str
     """
-    if not os.path.exists(sDir):
-        os.makedirs(sDir)
+    with open(VIDEO_SKIP_FILES, 'a') as fSkipVideo:
+        fSkipVideo.write(sURL)
 
 
 if __name__ == '__main__':

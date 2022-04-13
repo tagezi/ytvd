@@ -26,25 +26,8 @@ from pytube import YouTube, exceptions
 from urllib.error import HTTPError
 
 from config.config import VIDEO_DIR, VIDEOS_FILE, VIDEO_SKIP_FILES
-from src.ytvd_files import create_dir, get_list, set_skip_video
+from src.ytvd_files import create_dir, get_list, get_video_dir, set_skip_video
 from src.ytvd_subtitles import get_subtitles
-
-
-def get_video_dir(sVideoPath, sVideoDir):
-    """ The function gives human-readable name for concatenate parts of path
-    for directories to one string.
-
-    :param sVideoPath: The start of path. It comes from a constant in
-                       config file or an argument in command line.
-    :type sVideoPath: str
-    :param sVideoDir: The end of path. It is hard-coded parameter,
-                      but sVideoDir can be specified in an argument of
-                      command line.
-    :type sVideoDir: str
-    :return: The path in system rules.
-    :rtype: str
-    """
-    return os.path.join(sVideoPath, sVideoDir)
 
 
 def get_list_video(sVideoPath, sVideoDir, sFile, bSub, sLang):
