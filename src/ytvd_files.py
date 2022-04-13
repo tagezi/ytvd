@@ -15,7 +15,7 @@
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-The Script provides functions for working with files .
+The module provides functions for working with files and directories.
 """
 import os
 from config.config import VIDEO_SKIP_FILES
@@ -46,6 +46,12 @@ def set_skip_video(sURL):
     """
     with open(VIDEO_SKIP_FILES, 'a') as fSkipVideo:
         fSkipVideo.write(sURL)
+
+
+def clean_skip_file():
+    """ The Function clean file for skipping videos. """
+    with open(VIDEO_SKIP_FILES, 'w') as fSkipVideo:
+        fSkipVideo.write('')
 
 
 def save_subtitles(sDir, sFile, oJOSNSubtitles):
