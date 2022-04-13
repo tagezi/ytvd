@@ -17,23 +17,48 @@
 """
 The Script downloads files from specified playlists.
 """
-
 from pytube import Playlist
-from src.ytvd_files import get_list
+from src.ytvd_files import get_list, get_video_dir
 from src.ytvd_video import get_video
-from config.config import VIDEO_DIR, VIDEO_SKIP_FILES
+from config.config import PLAYLIST_FILE, VIDEO_DIR, VIDEO_SKIP_FILES
 
 
-def get_playlist_videos(sURL):
+def get_list_playlists(sPlaylistFile, sDir, bSub=False, sLang=''):
+    """ The function uses a list from a config file with a list of playlists.
+
+    :param sPlaylistFile: A name of the file containing a list of playlists.
+    :type sPlaylistFile: str
+    :param sDir: A path to directory where will be downloaded playlists.
+    :type sDir: str
+    :param bSub: Does it need to download subtitles?
+    :type bSub: bool
+    :param sLang: A language of subtitles.
+    :type sLang: str
+    :return: None
+    """
+    lPlayListURLs = get_list(sPlaylistFile)
+    if lPlayListURLs:
+        for sPlayListURL in lPlayListURLs:
+            get_playlist_videos(sPlayListURL, sDir, bSub, sLang)
+
+
+def get_playlist_videos(sURL, sDir, bSub=False, sLang=''):
     """ Function takes playlist's url of YuoTube and downloads all files
     from it. Additionally, the function types messages about the progress of
     the downloading of the files.
 
     :param sURL: An URl to the playlist with files which needs downloading.
     :type sURL: str
+    :param sDir: A directory where video files will save.
+    :type sDir: str
+    :param bSub: The flag which specify that subtitles should be downloaded.
+    :type bSub: bool
+    :param sLang: A language of subtitles that need to download.
+    :type sLang: str
+    :return: None
     """
     oPlayList = Playlist(sURL)
-    sPlayListDir = f'{VIDEO_DIR}/{oPlayList.title}'
+    sPlayListDir = get_video_dir(sDir, oPlayList.title)
     print(f'\n{oPlayList.title}\n{oPlayList.playlist_url}')
 
     dValues = {'prefix': 1, 'repeat': True}
@@ -44,24 +69,9 @@ def get_playlist_videos(sURL):
 
         dValues['repeat'] = True
         while dValues['repeat'] and sURLVideo not in lSkipVideo:
-            dValues = get_video(sURLVideo, sPlayListDir, dValues['prefix'])
+            dValues = get_video(sURLVideo, sPlayListDir, bSub, sLang,
+                                dValues['prefix'])
 
 
 if __name__ == '__main__':
-    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    get_list_playlists(PLAYLIST_FILE, VIDEO_DIR())
