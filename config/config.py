@@ -29,25 +29,25 @@ VIDEO_PATH = './files'
 
 #: The function change path of config directory for intro modules
 def CONFIG_DIR():
-    if not path.isdir(CONFIG_PATH):
+    if path.isdir(CONFIG_PATH):
         return CONFIG_PATH
     else:
         return f'.{CONFIG_PATH}'
 
 
 #: The file name with a list of YouTube channels.
-CHANNELS_FILE = f'{CONFIG_DIR}/channels.txt'
+CHANNELS_FILE = f'{CONFIG_DIR()}/channels.txt'
 #: The file name with a list of YouTube playlists.
-PLAYLIST_FILE = f'{CONFIG_DIR}/playlists.txt'
+PLAYLIST_FILE = f'{CONFIG_DIR()}/playlists.txt'
 #: The file name with a list of YouTube playlists.
-VIDEOS_FILE = f'{CONFIG_DIR}/videos.txt'
+VIDEOS_FILE = f'{CONFIG_DIR()}/videos.txt'
 #: The file name with a list of videos which needs skip.
-VIDEO_SKIP_FILES = f'{CONFIG_DIR}/skipvideos.txt'
+VIDEO_SKIP_FILES = f'{CONFIG_DIR()}/skipvideos.txt'
 
 
 #: The function change path of video directory for intro modules
 def VIDEO_DIR():
-    if not path.isdir(VIDEO_PATH):
+    if path.isdir(VIDEO_PATH):
         return VIDEO_PATH
     else:
         return f'.{VIDEO_PATH}'

@@ -50,6 +50,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx-prompt',
+    'sphinxarg.ext'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

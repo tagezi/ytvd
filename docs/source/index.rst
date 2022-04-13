@@ -84,9 +84,14 @@ There is lines in `./config/config.py` file:
 
 You can change, if you need.
 
-.. automodule:: config.config
-   :members:
-   :exclude-members: CONFIG_DIR, VIDEO_DIR
+Usage command line argument
+===========================
+
+.. argparse::
+   :module: src.ytvd_help
+   :func: get_argparser
+   :prog: ytvd.py
+   :noepilog:
 
 ------------------
 Code documentation
