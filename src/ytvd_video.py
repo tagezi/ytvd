@@ -17,7 +17,6 @@
 """
 The Script downloads videos by URL.
 """
-
 import os
 import socket
 
@@ -26,67 +25,117 @@ from time import sleep
 from pytube import YouTube, exceptions
 from urllib.error import HTTPError
 
-from src.ytvd_files import set_skip_video
+from config.config import VIDEO_DIR, VIDEOS_FILE, VIDEO_SKIP_FILES
+from src.ytvd_files import create_dir, get_list, set_skip_video
 from src.ytvd_subtitles import get_subtitles
 
 
-def get_video(sURL, sDir, Prefix=0, bRepeat=True):
-    """ Function takes a video by URL and saves it in directory.
+def get_video_dir(sVideoPath, sVideoDir):
+    """ The function gives human-readable name for concatenate parts of path
+    for directories to one string.
+
+    :param sVideoPath: The start of path. It comes from a constant in
+                       config file or an argument in command line.
+    :type sVideoPath: str
+    :param sVideoDir: The end of path. It is hard-coded parameter,
+                      but sVideoDir can be specified in an argument of
+                      command line.
+    :type sVideoDir: str
+    :return: The path in system rules.
+    :rtype: str
+    """
+    return os.path.join(sVideoPath, sVideoDir)
+
+
+def get_list_video(sVideoPath, sVideoDir, sFile, bSub, sLang):
+    """ The function uses a list from a config file with a list videos.
+
+    :param sVideoPath: The start of path. It comes from a constant in
+                      config file or an argument in command line.
+    :type sVideoPath: str
+    :param sVideoDir: The end of path. It is hard-coded parameter,
+                      but sVideoDir can be specified in an argument of
+                      command line.
+    :type sVideoDir: str
+    :param sFile: A name of the config file with a list videos.
+    :type sFile: str
+    :param bSub: Point to necessity of downloads subtitles.
+    :type bSub: bool
+    :param sLang: A code of language for subtitles.
+    :type sLang: str
+    :return: None
+    """
+    lVideoURLs = get_list(sFile)
+    if lVideoURLs:
+        sDir = get_video_dir(sVideoPath, sVideoDir)
+        for sVideoURL in lVideoURLs:
+            lSkipVideo = get_list(VIDEO_SKIP_FILES)
+            dValues = {'prefix': 1, 'repeat': True}
+            while dValues['repeat'] and sVideoURL not in lSkipVideo:
+                dValues = get_video(sVideoURL, sDir, bSub, sLang)
+
+
+def get_video(sURL, sDir, bSub, sLang, iPrefix=0, bRepeat=True):
+    """ The function takes a video by URL and saves it in specified directory.
 
     :param sURL: An URL of the video on YouTube.
     :type sURL: str
-
     :param sDir: A directory where the video will save. For a video of the
                 playlist it is a name of the playlist. Otherwise, it is
                 a *Videos* directory.
     :type sDir: str
-
-    :param Prefix: It is number as int for substitution at the beginning
-                  of the line.
-    :type Prefix: int or None
-
+    :param bSub: Point to necessity of downloads subtitles.
+    :type bSub: bool
+    :param sLang: A code of language for subtitles.
+    :type sLang: str
+    :param iPrefix: It is number as int for substitution at the beginning
+                  of the line. If Prefix = 0, no prefix will be added.
+    :type iPrefix: int or None
     :param bRepeat: It points that downloading should be repeated.
     :type bRepeat: bool
 
     :return: Returns two parameters as dict. The parameter *repeat* with value
-            *True* points that downloading of the videos needs repeat.
+            *True* points to that downloading of the videos needs repeat.
             The parameter *prefix* points on index number of videos
             in the playlist.
     :rtype: dict[int, bool]
     """
+    if not sURL:
+        return {'prefix': iPrefix, 'repeat': False}
+
     try:
         oYouTube = YouTube(sURL)
-        print(f'{str(Prefix)}. {oYouTube.title}')
     except exceptions.VideoUnavailable:
-        print(f'Видео по адресу {sURL} недоступно. Пропускаем.')
+        print(f'The video at {sURL} is not available. Skip.')
     else:
-        print(f'Скачиваю видео по адресу: {sURL}')
         oYouTube.streams.filter(file_extension='mp4')
         oYouStream = oYouTube.streams.get_highest_resolution()
+        create_dir(sDir)
+
+        sPrefix = ''
+        if iPrefix > 0:
+            sPrefix = f'{str(iPrefix)}. '
+
+        fFileName = f'{sPrefix}{oYouStream.default_filename}'
+        print(fFileName)
+        print(f'Downloading video at: {sURL}')
         try:
-            if not os.path.exists(sDir):
-                os.makedirs(sDir)
-
-            sPrefix = ''
-            if type(Prefix) == int:
-                sPrefix = f'{str(Prefix)}. '
-
-            fFileName = f'{sPrefix}{oYouStream.default_filename}'
             oYouStream.download(filename=fFileName, output_path=sDir)
-            get_subtitles(sDir, fFileName, sURL)
+            if bSub:
+                get_subtitles(sDir, fFileName, sURL, sLang)
         except socket.error:
-            print(f'socket.error: Ошибка скачивания видео {sURL}')
+            print(f'socket.error: Error of downloading video {sURL}')
         except HTTPError:
-            print(f'HTTPError: Ошибка скачивания видео {sURL}')
+            print(f'HTTPError: Error of downloading video {sURL}')
         else:
             bRepeat = False
             set_skip_video(f'{sURL}\n')
-            if type(Prefix) == int:
-                Prefix = Prefix + 1
+            if iPrefix > 0:
+                iPrefix = iPrefix + 1
     finally:
         sleep(15)
-    return {'prefix': Prefix, 'repeat': bRepeat}
+    return {'prefix': iPrefix, 'repeat': bRepeat}
 
 
 if __name__ == '__main__':
-    pass
+    get_list_video(VIDEO_DIR(), 'videos', VIDEOS_FILE, False, '')

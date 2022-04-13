@@ -63,5 +63,16 @@ def save_subtitles(sDir, sFile, oJOSNSubtitles):
         json_file.write(oJOSNSubtitles)
 
 
+def create_dir(sDir):
+    """ The function creates directory, if it does not exist.
+
+    :param sDir: A name of the directory.
+    :type sDir: str
+    :return: None
+    """
+    if not os.path.exists(sDir):
+        os.makedirs(sDir)
+
+
 if __name__ == '__main__':
     pass
