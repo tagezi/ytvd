@@ -14,73 +14,95 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from src.ytvd_playlist import get_playlist_videos
-from src.ytvd_files import get_list
-from src.ytvd_video import get_video
-from config.config import CHANNELS_FILE, PLAYLIST_FILE, \
-    VIDEOS_FILE, VIDEO_DIR
-
 """
-It's not new library for downloading videos or video subtitles from YouTube. 
+It's not new library for downloading videos or video subtitles from YouTube.
 YTVD is script which uses *PyTube like API* and *youtube_transcript_api* for
-access to playlists and videos, and slightly expands the functionality. For 
+access to playlists and videos, and slightly expands the functionality. For
 example, you can create a list with playlists and download all videos from it.
-Also, you can download only new videos and video subtitles from this list, 
+Also, you can download only new videos and video subtitles from this list,
 if you already have downloaded videos from these playlists. Videos are
 saved in a directory with the name of the playlist.
 """
-from config.config import CHANNELS_FILE, PLAYLIST_FILE, VIDEOS_FILE
-from src.ytvd_channel import get_channel
-from src.ytvd_files import clean_skip_file
+from config.config import *
+from src.ytvd_channel import *
+from src.ytvd_files import clean_skip_file, get_list
 from src.ytvd_help import get_argparser
-from src.ytvd_playlist import get_playlist_videos
-from src.ytvd_video import get_list_video, get_video_dir
+from src.ytvd_playlist import get_list_playlists, get_playlist_videos
+from src.ytvd_video import get_list_video, get_video, get_video_dir
 
 
-def run_downloads():
-    lPlayListURLs = get_list(PLAYLIST_FILE)
-    if lPlayListURLs:
-        for sPlayListURL in lPlayListURLs:
-            get_playlist_videos(sPlayListURL)
-    lVideoURLs = get_list(VIDEOS_FILE)
-    if lVideoURLs:
-        for sVideoURL in lVideoURLs:
-            get_video(sVideoURL, VIDEO_DIR())
+def get_specific_video(oArgs, bSub, sLang):
+    """ The function processes the url from the command line passed using the
+    command line argument.
 
-
-def get_specific_video(oArg, bSub, sLang):
+    :param oArgs: Arguments of command line.
+    :type oArgs: ArgumentParser
+    :param bSub: Does it need to download subtitles?
+    :type bSub: bool
+    :param sLang: A language of subtitles.
+    :type sLang: str
+    :return: None
+    """
     sVideoPath = VIDEO_DIR()
     sVideoDir = 'videos'
-    if oArg.psave:
-        sVideoPath = oArg.psave
-    if oArg.psavevideos:
-        sVideoDir = oArg.psavevideos
+    if oArgs.psave:
+        sVideoPath = oArgs.psave
+    if oArgs.psavevideos:
+        sVideoDir = oArgs.psavevideos
 
-    if oArg.schannel:
-        pass
-    if oArg.plchannel:
-        pass
-    if oArg.splaylist:
-        get_playlist_videos(oArg.splaylists, sVideoPath, bSub, sLang)
-    if oArg.svideo:
+    if oArgs.schannel:
+        get_channel_videos(oArgs.schannel, sVideoPath, sVideoDir, bSub, sLang)
+    if oArgs.plchannel:
+        download_videos(oArgs.plchannel, sVideoPath, sVideoDir, bSub, sLang)
+    if oArgs.splaylist:
+        get_playlist_videos(oArgs.splaylist, sVideoPath, bSub, sLang)
+    if oArgs.svideo:
         sDir = get_video_dir(sVideoPath, sVideoDir)
-        get_video(oArg.svideo, sDir, bSub, sLang)
+        get_video(oArgs.svideo, sDir, bSub, sLang)
 
 
 def get_action(oPrsr):
     """ Creates a description of command line arguments for use and help.
 
-        :param oPrsr: argparse object
-        :type oPrsr: ArgumentParser
-        """
+    :param oPrsr: Argparse object.
+    :type oPrsr: ArgumentParser
+    """
     sVideoPath = VIDEO_DIR()
     sVideoDir = 'videos'
     sChannelFile = CHANNELS_FILE
     sPlaylistFile = PLAYLIST_FILE
     sVideosFile = VIDEOS_FILE
     bSubtitles = False
-    oArgs = oPrsr.parse_args()
+    # Get all string arguments.
+    oArgs, oUnknown = oPrsr.parse_known_args()
 
+    # Parsing unknown arguments.
+    if oUnknown:
+        if oUnknown[0].find('https://www.youtube.com/') == -1:
+            return
+
+        # Just to avoid clutter in the if operator.
+        bChannel = (oUnknown[0].find('channel/') != -1)
+        bPlaylist = (oUnknown[0].find('playlist') != -1)
+        bPlaylistVar = (oUnknown[0].find('watch') != -1
+                        and oUnknown[0].find('&list=') != -1)
+        bVideosFile = (oUnknown[0].find('watch') != -1)
+
+        if bChannel:
+            download_videos(oUnknown[0], sVideoPath, sVideoDir)
+        elif bPlaylist or bPlaylistVar:
+            get_playlist_videos(oUnknown[0], sVideoPath)
+        elif bVideosFile:
+            lSkipVideo = get_list(VIDEO_SKIP_FILES)
+            dValues = {'prefix': 0, 'repeat': True}
+            while dValues['repeat'] and oUnknown[0] not in lSkipVideo:
+                dValues = get_video(oUnknown[0], sVideoPath)
+        else:
+            # if the unknown arg isn't a YouTube link, it displays help
+            oPrsr.print_help()
+        return
+
+    # Parsing known arguments.
     if oArgs.cskip:
         clean_skip_file()
     if oArgs.dsub or oArgs.ssub:
@@ -94,11 +116,12 @@ def get_action(oPrsr):
     if oArgs.pvideos:
         sVideosFile = oArgs.pvideos
     if oArgs.dplaylists:
-        get_channel(sChannelFile, bSubtitles, oArgs.ssub)
+        get_channel_file(sChannelFile, sVideoPath, bSubtitles, oArgs.ssub)
     if oArgs.dplaylists:
-        get_playlist_videos(sPlaylistFile, bSubtitles, oArgs.ssub)
+        get_list_playlists(sPlaylistFile, sVideoPath, bSubtitles, oArgs.ssub)
     if oArgs.dvideos:
-        get_list_video(sVideosFile, bSubtitles, oArgs.ssub)
+        get_list_video(sVideoPath, sVideoDir, sVideosFile,
+                       bSubtitles, oArgs.ssub)
 
 
 if __name__ == '__main__':

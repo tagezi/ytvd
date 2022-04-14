@@ -30,7 +30,7 @@ from src.ytvd_files import create_dir, get_list, get_video_dir, set_skip_video
 from src.ytvd_subtitles import get_subtitles
 
 
-def get_list_video(sVideoPath, sVideoDir, sFile, bSub, sLang):
+def get_list_video(sVideoPath, sVideoDir, sFile, bSub=False, sLang=''):
     """ The function uses a list from a config file with a list videos.
 
     :param sVideoPath: The start of path. It comes from a constant in
@@ -58,7 +58,7 @@ def get_list_video(sVideoPath, sVideoDir, sFile, bSub, sLang):
                 dValues = get_video(sVideoURL, sDir, bSub, sLang)
 
 
-def get_video(sURL, sDir, bSub, sLang, iPrefix=0, bRepeat=True):
+def get_video(sURL, sDir, bSub=False, sLang='', iPrefix=0, bRepeat=True):
     """ The function takes a video by URL and saves it in specified directory.
 
     :param sURL: An URL of the video on YouTube.
@@ -100,8 +100,8 @@ def get_video(sURL, sDir, bSub, sLang, iPrefix=0, bRepeat=True):
             sPrefix = f'{str(iPrefix)}. '
 
         fFileName = f'{sPrefix}{oYouStream.default_filename}'
-        print(fFileName)
         print(f'Downloading video at: {sURL}')
+        print(fFileName)
         try:
             oYouStream.download(filename=fFileName, output_path=sDir)
             if bSub:

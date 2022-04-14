@@ -14,13 +14,12 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from argparse import ArgumentParser
-from config.config import CHANNELS_FILE, PLAYLIST_FILE, VIDEOS_FILE, VIDEO_DIR
-
-""""""  #
-""" 
+"""
 The module provides functions for displaying help and processing arguments
 """
+
+from argparse import ArgumentParser
+from config.config import CHANNELS_FILE, PLAYLIST_FILE, VIDEOS_FILE, VIDEO_DIR
 
 
 def get_argparser():
