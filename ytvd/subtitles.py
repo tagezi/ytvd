@@ -13,3 +13,22 @@
 #
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+"""
+The Script downloads subtitles by URL.
+"""
+
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.formatters import JSONFormatter
+from ytvd.files import save_subtitles
+
+
+def get_subtitles(sDir, sFile, sURL, sLang):
+    lKey = sURL.split('=')
+    transcript = YouTubeTranscriptApi.get_transcript(lKey[1])
+
+    oFormatter = JSONFormatter()
+    formatted = oFormatter.format_transcript(transcript)
+    print('Скачиваю субтитры.')
+
+    save_subtitles(sDir, sFile, formatted)

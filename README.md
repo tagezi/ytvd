@@ -52,9 +52,9 @@ There is lines in main.py file:
 
 ```python
 #: The file name with a list of playlists.
-PLAYLIST_FILE = '../config/playlists.txt'
+PLAYLIST_FILE = '../config/playlists.ini'
 #: The file name with a list of files which needs skip.
-VIDEO_SKIP_FILE = '../config/skipvideos.txt'
+VIDEO_SKIP_FILE = '../config/skipvideos.ini'
 #: A path to the directory where files are saves.
 ```
 

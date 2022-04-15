@@ -26,6 +26,13 @@ Also, you can download only new videos and video subtitles from this list,
 if you already have downloaded videos from these playlists. Videos are saved
 in a directory with the name of the playlist.
 
+
+.. note::
+   Most people who post their videos on YouTube can only do so for some reward.
+   When you download a video and watch it offline, the author has nothing.
+   Don't forget to thank your author for his work so that he can continue to
+   delight you further.
+
 Install and run YTDV
 ====================
 

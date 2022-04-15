@@ -18,9 +18,9 @@
 The Script downloads files from specified playlists.
 """
 from pytube import Playlist
-from src.ytvd_files import get_list, get_video_dir
-from src.ytvd_video import get_video
-from config.config import PLAYLIST_FILE, VIDEO_DIR, VIDEO_SKIP_FILES
+from ytvd.files import get_list, get_dir
+from ytvd.video import get_video
+from ytvd.config import CONFIG
 
 
 def get_list_playlists(sPlaylistFile, sDir, bSub=False, sLang=''):
@@ -58,12 +58,12 @@ def get_playlist_videos(sURL, sDir, bSub=False, sLang=''):
     :return: None
     """
     oPlayList = Playlist(sURL)
-    sPlayListDir = get_video_dir(sDir, oPlayList.title)
+    sPlayListDir = get_dir(sDir, oPlayList.title)
     print(f'\n{oPlayList.title}\n{oPlayList.playlist_url}')
 
     dValues = {'prefix': 1, 'repeat': True}
     for sURLVideo in oPlayList.video_urls:
-        lSkipVideo = get_list(VIDEO_SKIP_FILES)
+        lSkipVideo = get_list(CONFIG['skip'])
         if sURLVideo in lSkipVideo:
             dValues['prefix'] = dValues['prefix'] + 1
 
@@ -74,4 +74,4 @@ def get_playlist_videos(sURL, sDir, bSub=False, sLang=''):
 
 
 if __name__ == '__main__':
-    get_list_playlists(PLAYLIST_FILE, VIDEO_DIR())
+    get_list_playlists(CONFIG['playlists'], CONFIG['path'])

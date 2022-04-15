@@ -26,7 +26,7 @@ class TestPEP8(unittest.TestCase):
         oStyle = pycodestyle.StyleGuide()
         result = oStyle.check_files(['./',
                                      '../config/',
-                                     '../src/'])
+                                     '../ytvd/'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 

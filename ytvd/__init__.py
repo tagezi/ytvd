@@ -15,20 +15,21 @@
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-The Script downloads subtitles by URL.
+YTVD: a very unserious Python library for downloading YouTube Videos. ;)
 """
+__title__ = "YTVD"
+__author__ = "Valerii Goncharuk"
+__license__ = "GPL 3.0"
 
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.formatters import JSONFormatter
-from src.ytvd_files import save_subtitles
+from ytvd.config import *
+from ytvd.version import __version__
+from ytvd.channel import *
+from ytvd.files import *
+from ytvd.help import *
+from ytvd.playlist import *
+from ytvd.subtitles import *
+from ytvd.video import *
+from ytvd.__main__ import get_action
 
-
-def get_subtitles(sDir, sFile, sURL, sLang):
-    lKey = sURL.split('=')
-    transcript = YouTubeTranscriptApi.get_transcript(lKey[1])
-
-    oFormatter = JSONFormatter()
-    formatted = oFormatter.format_transcript(transcript)
-    print('Скачиваю субтитры.')
-
-    save_subtitles(sDir, sFile, formatted)
+if __name__ == '__main__':
+    get_action(get_argparser())

@@ -18,12 +18,12 @@
 The module provides functions for working with files and directories.
 """
 import os
-from config.config import VIDEO_SKIP_FILES
+from ytvd.config import CONFIG
 
 
 def clean_skip_file():
     """ The Function clean file for skipping videos. """
-    with open(VIDEO_SKIP_FILES, 'w') as fSkipVideo:
+    with open(CONFIG['skip'], 'w') as fSkipVideo:
         fSkipVideo.write('')
 
 
@@ -54,21 +54,21 @@ def get_list(sFileName):
     return lList
 
 
-def get_video_dir(sVideoPath, sVideoDir):
+def get_dir(sDirStart, sDirEnd):
     """ The function gives human-readable name for concatenate parts of path
     for directories to one string.
 
-    :param sVideoPath: The start of path. It comes from a constant in
+    :param sDirStart: The start of path. It comes from a constant in
                        config file or an argument in command line.
-    :type sVideoPath: str
-    :param sVideoDir: The end of path. It is hard-coded parameter,
+    :type sDirStart: str
+    :param sDirEnd: The end of path. It is hard-coded parameter,
                       but sVideoDir can be specified in an argument of
                       command line.
-    :type sVideoDir: str
+    :type sDirEnd: str
     :return: The path in system rules.
     :rtype: str
     """
-    return os.path.join(sVideoPath, sVideoDir)
+    return os.path.join(sDirStart, sDirEnd)
 
 
 def save_subtitles(sDir, sFile, oJOSNSubtitles):
@@ -93,7 +93,7 @@ def set_skip_video(sURL):
     :param sURL: An URL which need add to the file.
     :type sURL: str
     """
-    with open(VIDEO_SKIP_FILES, 'a') as fSkipVideo:
+    with open(CONFIG['skip'], 'a') as fSkipVideo:
         fSkipVideo.write(sURL)
 
 

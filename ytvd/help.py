@@ -19,7 +19,7 @@ The module provides functions for displaying help and processing arguments.
 """
 
 from argparse import ArgumentParser
-from config.config import CHANNELS_FILE, PLAYLIST_FILE, VIDEOS_FILE, VIDEO_DIR
+from ytvd.config import CONFIG
 
 
 def get_argparser():
@@ -28,11 +28,10 @@ def get_argparser():
         :return: Filling ArgumentParser object.
         :rtype: ArgumentParser
         """
-    sVideoDir = VIDEO_DIR()
     sDis = 'The script allows you to download videos from youtube from ' \
            'channels, playlists and just videos. Yuo can use arguments of ' \
            'command line or just give YouTube URL.'
-    sUsage = 'ytvd.py [URL] [--argument [--argument=value [...]]]'
+    sUsage = '__main__.py [URL] [--argument [--argument=value [...]]]'
     sEpilog = '(c) tagezi. Licensed under the GPL 3.0'
     oParser = ArgumentParser(description=sDis,
                              epilog=sEpilog,
@@ -43,7 +42,7 @@ def get_argparser():
                          dest="pchannels",
                          metavar="FILE",
                          nargs='?',
-                         const=CHANNELS_FILE,
+                         const=CONFIG['channels'],
                          type=str,
                          help=sHelp
                          )
@@ -52,7 +51,7 @@ def get_argparser():
                          dest="pplaylists",
                          metavar="FILE",
                          nargs='?',
-                         const=PLAYLIST_FILE,
+                         const=CONFIG['playlists'],
                          type=str,
                          help=sHelp
                          )
@@ -61,7 +60,7 @@ def get_argparser():
                          dest="pvideos",
                          metavar="FILE",
                          nargs='?',
-                         const=VIDEOS_FILE,
+                         const=CONFIG['videos'],
                          type=str,
                          help=sHelp
                          )
@@ -71,7 +70,7 @@ def get_argparser():
                          dest="psave",
                          metavar="PATH",
                          nargs='?',
-                         const=sVideoDir,
+                         const=CONFIG['path'],
                          type=str,
                          help=sHelp
                          )

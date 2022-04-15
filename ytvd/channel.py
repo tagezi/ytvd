@@ -17,10 +17,10 @@
 from bs4 import BeautifulSoup
 from pytube import Channel
 
-from config.config import VIDEO_SKIP_FILES
-from src.ytvd_files import get_list, get_video_dir
-from src.ytvd_playlist import get_playlist_videos
-from src.ytvd_video import get_video
+from ytvd.config import CONFIG
+from ytvd.files import get_list, get_dir
+from ytvd.playlist import get_playlist_videos
+from ytvd.video import get_video
 
 
 def get_channel_file(sChannelFile, sDir, sDirVideos, bSub=False, sLang=''):
@@ -60,7 +60,7 @@ def download_videos(sChannelURL, sDir, sDirVideos, bSub=False, sLang=''):
     :return: None
     """
     lPlaylists = get_chanel_playlists(sChannelURL)
-    sDir = get_video_dir(sDir, Channel(sChannelURL).channel_name)
+    sDir = get_dir(sDir, Channel(sChannelURL).channel_name)
     for sPlaylistURL in lPlaylists:
         get_playlist_videos(sPlaylistURL, sDir, bSub, sLang)
     get_channel_videos(sChannelURL, sDir, sDirVideos, bSub, sLang)
@@ -117,9 +117,9 @@ def get_channel_videos(sChannelURL, sDir, sDirVideos, bSub=False, sLang=''):
     """
     lVideos = Channel(sChannelURL)
     for sVideoURL in lVideos.video_urls:
-        sDir = get_video_dir(sDir, lVideos.channel_name)
-        sDir = get_video_dir(sDir, sDirVideos)
-        lSkipVideo = get_list(VIDEO_SKIP_FILES)
+        sDir = get_dir(sDir, lVideos.channel_name)
+        sDir = get_dir(sDir, sDirVideos)
+        lSkipVideo = get_list(CONFIG['skip'])
         dValues = {'prefix': 0, 'repeat': True}
         while dValues['repeat'] and sVideoURL not in lSkipVideo:
             dValues = get_video(sVideoURL, sDir, bSub, sLang)

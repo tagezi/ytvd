@@ -25,12 +25,12 @@ saved in a directory with the name of the playlist.
 """
 from argparse import ArgumentParser
 
-from config.config import *
-from src.ytvd_channel import *
-from src.ytvd_files import clean_skip_file, get_list
-from src.ytvd_help import get_argparser
-from src.ytvd_playlist import get_list_playlists, get_playlist_videos
-from src.ytvd_video import get_list_video, get_video, get_video_dir
+from ytvd.channel import *
+from ytvd.config import CONFIG
+from ytvd.files import clean_skip_file, get_list, get_dir
+from ytvd.help import get_argparser
+from ytvd.playlist import get_list_playlists, get_playlist_videos
+from ytvd.video import get_list_video, get_video
 
 
 def get_specific_video(oArgs, bSub, sLang):
@@ -45,7 +45,7 @@ def get_specific_video(oArgs, bSub, sLang):
     :type sLang: str
     :return: None
     """
-    sVideoPath = VIDEO_DIR()
+    sVideoPath = CONFIG['path']
     sVideoDir = 'videos'
     if oArgs.psave:
         sVideoPath = oArgs.psave
@@ -59,7 +59,7 @@ def get_specific_video(oArgs, bSub, sLang):
     if oArgs.splaylist:
         get_playlist_videos(oArgs.splaylist, sVideoPath, bSub, sLang)
     if oArgs.svideo:
-        sDir = get_video_dir(sVideoPath, sVideoDir)
+        sDir = get_dir(sVideoPath, sVideoDir)
         get_video(oArgs.svideo, sDir, bSub, sLang)
 
 
@@ -91,7 +91,7 @@ def unknown_arg(oParser, oUnknown, sVideoPath, sVideoDir):
     elif bPlaylist or bPlaylistVar:
         get_playlist_videos(oUnknown[0], sVideoPath)
     elif bVideosFile:
-        lSkipVideo = get_list(VIDEO_SKIP_FILES)
+        lSkipVideo = get_list(CONFIG['skip'])
         dValues = {'prefix': 0, 'repeat': True}
         while dValues['repeat'] and oUnknown[0] not in lSkipVideo:
             dValues = get_video(oUnknown[0], sVideoPath)
@@ -107,11 +107,11 @@ def get_action(oParser):
     :param oParser: Argparse object.
     :type oParser: ArgumentParser
     """
-    sVideoPath = VIDEO_DIR()
+    sVideoPath = CONFIG['path']
     sVideoDir = 'videos'
-    sChannelFile = CHANNELS_FILE
-    sPlaylistFile = PLAYLIST_FILE
-    sVideosFile = VIDEOS_FILE
+    sChannelFile = CONFIG['channels']
+    sPlaylistFile = CONFIG['playlists']
+    sVideosFile = CONFIG['videos']
     bSub = False
     # Get all string arguments.
     oArgs, oUnknown = oParser.parse_known_args()

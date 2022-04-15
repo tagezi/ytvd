@@ -17,7 +17,6 @@
 """
 The Script downloads videos by URL.
 """
-import os
 import socket
 
 from time import sleep
@@ -25,9 +24,9 @@ from time import sleep
 from pytube import YouTube, exceptions
 from urllib.error import HTTPError
 
-from config.config import VIDEO_DIR, VIDEOS_FILE, VIDEO_SKIP_FILES
-from src.ytvd_files import create_dir, get_list, get_video_dir, set_skip_video
-from src.ytvd_subtitles import get_subtitles
+from ytvd.config import CONFIG
+from ytvd.files import create_dir, get_list, get_dir, set_skip_video
+from ytvd.subtitles import get_subtitles
 
 
 def get_list_video(sVideoPath, sVideoDir, sFile, bSub=False, sLang=''):
@@ -50,9 +49,9 @@ def get_list_video(sVideoPath, sVideoDir, sFile, bSub=False, sLang=''):
     """
     lVideoURLs = get_list(sFile)
     if lVideoURLs:
-        sDir = get_video_dir(sVideoPath, sVideoDir)
+        sDir = get_dir(sVideoPath, sVideoDir)
         for sVideoURL in lVideoURLs:
-            lSkipVideo = get_list(VIDEO_SKIP_FILES)
+            lSkipVideo = get_list(CONFIG['skip'])
             dValues = {'prefix': 1, 'repeat': True}
             while dValues['repeat'] and sVideoURL not in lSkipVideo:
                 dValues = get_video(sVideoURL, sDir, bSub, sLang)
@@ -121,4 +120,4 @@ def get_video(sURL, sDir, bSub=False, sLang='', iPrefix=0, bRepeat=True):
 
 
 if __name__ == '__main__':
-    get_list_video(VIDEO_DIR(), 'videos', VIDEOS_FILE, False, '')
+    get_list_video(CONFIG['path'], 'videos', CONFIG['videos'], False, '')
