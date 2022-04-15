@@ -152,8 +152,8 @@ cython_debug/
 
 # my work folders and files
 python.log
-/config/playlists.txt
-/config/skipvideos.txt
-/config/videos.txt
+/config/playlists.ini
+/config/skipvideos.ini
+/config/videos.ini
 /files/*
-/config/cannels.txt
+/config/channels.ini

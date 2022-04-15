@@ -13,5 +13,20 @@
 #
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+The module reads config parameter.
+"""
+from configparser import ConfigParser
 
-from . import config
+CONFIG_PATH = '../config/config.ini'
+
+
+def config_read():
+    oConfig = ConfigParser()
+    oConfig.read(CONFIG_PATH)
+
+    return {'path': oConfig['PATH']['path'],
+            'channels': oConfig['FILES']['channels'],
+            'playlists': oConfig['FILES']['playlists'],
+            'videos': oConfig['FILES']['videos'],
+            'skip': oConfig['FILES']['skip']}
