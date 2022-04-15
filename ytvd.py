@@ -63,8 +63,8 @@ def get_specific_video(oArgs, bSub, sLang):
         get_video(oArgs.svideo, sDir, bSub, sLang)
 
 
-def get_action(oPrsr):
-    """ Creates a description of command line arguments for use and help.
+def unknown_arg(oParser, oUnknown, sVideoPath, sVideoDir):
+    """ The function parses unknown arguments of command line.
 
     :param oParser: Argparse object.
     :type oParser: ArgumentParser
@@ -76,63 +76,70 @@ def get_action(oPrsr):
     :type sVideoDir: str
     :return: None
     """
+    if oUnknown[0].find('https://www.youtube.com/') == -1:
+        return
+
+    # Just to avoid clutter in the if operator.
+    bChannel = (oUnknown[0].find('channel/') != -1)
+    bPlaylist = (oUnknown[0].find('playlist') != -1)
+    bPlaylistVar = (oUnknown[0].find('watch') != -1
+                    and oUnknown[0].find('&list=') != -1)
+    bVideosFile = (oUnknown[0].find('watch') != -1)
+
+    if bChannel:
+        download_videos(oUnknown[0], sVideoPath, sVideoDir)
+    elif bPlaylist or bPlaylistVar:
+        get_playlist_videos(oUnknown[0], sVideoPath)
+    elif bVideosFile:
+        lSkipVideo = get_list(VIDEO_SKIP_FILES)
+        dValues = {'prefix': 0, 'repeat': True}
+        while dValues['repeat'] and oUnknown[0] not in lSkipVideo:
+            dValues = get_video(oUnknown[0], sVideoPath)
+    else:
+        # if the unknown arg isn't a YouTube link, it displays help
+        oParser.print_help()
+    exit(0)
+
+
+def get_action(oParser):
+    """ Creates a description of command line arguments for use and help.
+
+    :param oParser: Argparse object.
+    :type oParser: ArgumentParser
+    """
     sVideoPath = VIDEO_DIR()
     sVideoDir = 'videos'
     sChannelFile = CHANNELS_FILE
     sPlaylistFile = PLAYLIST_FILE
     sVideosFile = VIDEOS_FILE
-    bSubtitles = False
+    bSub = False
     # Get all string arguments.
-    oArgs, oUnknown = oPrsr.parse_known_args()
+    oArgs, oUnknown = oParser.parse_known_args()
 
     # Parsing unknown arguments.
     if oUnknown:
-        if oUnknown[0].find('https://www.youtube.com/') == -1:
-            return
-
-        # Just to avoid clutter in the if operator.
-        bChannel = (oUnknown[0].find('channel/') != -1)
-        bPlaylist = (oUnknown[0].find('playlist') != -1)
-        bPlaylistVar = (oUnknown[0].find('watch') != -1
-                        and oUnknown[0].find('&list=') != -1)
-        bVideosFile = (oUnknown[0].find('watch') != -1)
-
-        if bChannel:
-            download_videos(oUnknown[0], sVideoPath, sVideoDir)
-        elif bPlaylist or bPlaylistVar:
-            get_playlist_videos(oUnknown[0], sVideoPath)
-        elif bVideosFile:
-            lSkipVideo = get_list(VIDEO_SKIP_FILES)
-            dValues = {'prefix': 0, 'repeat': True}
-            while dValues['repeat'] and oUnknown[0] not in lSkipVideo:
-                dValues = get_video(oUnknown[0], sVideoPath)
-        else:
-            # if the unknown arg isn't a YouTube link, it displays help
-            oPrsr.print_help()
-        return
+        unknown_arg(oParser, oUnknown, sVideoPath, sVideoDir)
 
     # Parsing known arguments.
     if oArgs.cskip:
         clean_skip_file()
     if oArgs.dsub or oArgs.ssub:
-        bSubtitles = True
+        bSub = True
     if oArgs.schannel or oArgs.plchannel or oArgs.splaylist or oArgs.svideo:
-        get_specific_video(oArgs, bSubtitles, oArgs.ssub)
+        get_specific_video(oArgs, bSub, oArgs.ssub)
     if oArgs.pchannels:
         sChannelFile = oArgs.pchannels
     if oArgs.pplaylists:
         sPlaylistFile = oArgs.pplaylists
     if oArgs.pvideos:
         sVideosFile = oArgs.pvideos
+    if oArgs.dchannel:
+        get_channel_file(sChannelFile, sVideoPath, sVideoDir, bSub, oArgs.ssub)
     if oArgs.dplaylists:
-        get_channel_file(sChannelFile, sVideoPath, bSubtitles, oArgs.ssub)
-    if oArgs.dplaylists:
-        get_list_playlists(sPlaylistFile, sVideoPath, bSubtitles, oArgs.ssub)
+        get_list_playlists(sPlaylistFile, sVideoPath, bSub, oArgs.ssub)
     if oArgs.dvideos:
-        get_list_video(sVideoPath, sVideoDir, sVideosFile,
-                       bSubtitles, oArgs.ssub)
+        get_list_video(sVideoPath, sVideoDir, sVideosFile, bSub, oArgs.ssub)
 
 
 if __name__ == '__main__':
-    oParser = get_argparser()
-    get_action(oParser)
+    get_action(get_argparser())
