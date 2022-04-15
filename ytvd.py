@@ -23,6 +23,8 @@ Also, you can download only new videos and video subtitles from this list,
 if you already have downloaded videos from these playlists. Videos are
 saved in a directory with the name of the playlist.
 """
+from argparse import ArgumentParser
+
 from config.config import *
 from src.ytvd_channel import *
 from src.ytvd_files import clean_skip_file, get_list
@@ -36,7 +38,7 @@ def get_specific_video(oArgs, bSub, sLang):
     command line argument.
 
     :param oArgs: Arguments of command line.
-    :type oArgs: ArgumentParser
+    :type oArgs: Namespace
     :param bSub: Does it need to download subtitles?
     :type bSub: bool
     :param sLang: A language of subtitles.
@@ -64,8 +66,15 @@ def get_specific_video(oArgs, bSub, sLang):
 def get_action(oPrsr):
     """ Creates a description of command line arguments for use and help.
 
-    :param oPrsr: Argparse object.
-    :type oPrsr: ArgumentParser
+    :param oParser: Argparse object.
+    :type oParser: ArgumentParser
+    :param oUnknown: Unknown arguments of command line.
+    :type oUnknown: list
+    :param sVideoPath: A path to directory where will be downloaded channels.
+    :type sVideoPath: str
+    :param sVideoDir: A path to directory where will be downloaded videos.
+    :type sVideoDir: str
+    :return: None
     """
     sVideoPath = VIDEO_DIR()
     sVideoDir = 'videos'

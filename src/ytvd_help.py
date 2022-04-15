@@ -15,7 +15,7 @@
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-The module provides functions for displaying help and processing arguments
+The module provides functions for displaying help and processing arguments.
 """
 
 from argparse import ArgumentParser
@@ -29,8 +29,10 @@ def get_argparser():
         :rtype: ArgumentParser
         """
     sVideoDir = VIDEO_DIR()
-    sDis = 'The script allows you to download videos from youtube.'
-    sUsage = 'ytvd.py [--argument [--argument=value [...]]]'
+    sDis = 'The script allows you to download videos from youtube from ' \
+           'channels, playlists and just videos. Yuo can use arguments of ' \
+           'command line or just give YouTube URL.'
+    sUsage = 'ytvd.py [URL] [--argument [--argument=value [...]]]'
     sEpilog = '(c) tagezi. Licensed under the GPL 3.0'
     oParser = ArgumentParser(description=sDis,
                              epilog=sEpilog,
