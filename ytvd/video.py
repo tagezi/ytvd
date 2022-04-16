@@ -105,7 +105,9 @@ def get_video(sURL, sDir, bSub=False, sLang='', iPrefix=0, bRepeat=True):
         try:
             oYouStream.download(filename=fFileName, output_path=sDir)
             if bSub:
-                get_subtitles(sDir, fFileName, sURL, sLang)
+                if not sLang:
+                    sLang = 'en'
+                get_subtitles(sDir, fFileName, oYouTube, sLang)
         except socket.error:
             print(f'socket.error: Error of downloading video {sURL}')
             sleep(10)

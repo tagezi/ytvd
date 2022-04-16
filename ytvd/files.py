@@ -71,19 +71,19 @@ def get_dir(sDirStart, sDirEnd):
     return os.path.join(sDirStart, sDirEnd)
 
 
-def save_subtitles(sDir, sFile, oJOSNSubtitles):
+def save_subtitles(sDir, sFile, sSub):
     """ Function saves subtitles into a file as JOSN format.
 
     :param sDir: A path where the file will save.
     :type sDir: str
     :param sFile: A name of the file with subtitles.
     :type sFile: str
-    :param oJOSNSubtitles: A list as JOSN.
-    :type oJOSNSubtitles: josn
+    :param sSub: A list as JOSN.
+    :type sSub: josn
     """
-    completeName = os.path.join(sDir, sFile + ".json")
-    with open(completeName, 'w', encoding='utf-8') as json_file:
-        json_file.write(oJOSNSubtitles)
+    sFilePath = os.path.join(sDir, sFile + ".srt")
+    with open(sFilePath, 'w', encoding='utf-8') as fSTR:
+        fSTR.write(sSub)
 
 
 def set_skip_video(sFile, sURL):

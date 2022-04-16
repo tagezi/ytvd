@@ -47,6 +47,7 @@ def get_specific_video(oArgs, bSub, sLang):
     """
     sVideoPath = CONFIG['path']
     sVideoDir = 'videos'
+
     if oArgs.psave:
         sVideoPath = oArgs.psave
     if oArgs.psavevideos:
@@ -60,7 +61,10 @@ def get_specific_video(oArgs, bSub, sLang):
         get_playlist_videos(oArgs.splaylist, sVideoPath, bSub, sLang)
     if oArgs.svideo:
         sDir = get_dir(sVideoPath, sVideoDir)
-        get_video(oArgs.svideo, sDir, bSub, sLang)
+        lSkipVideo = get_list(CONFIG['skip'])
+        dValues = {'prefix': 0, 'repeat': True}
+        while dValues['repeat'] and oArgs.svideo not in lSkipVideo:
+            dValues = get_video(oArgs.svideo, sDir, bSub, sLang)
 
 
 def unknown_arg(oParser, oUnknown, sVideoPath, sVideoDir):
