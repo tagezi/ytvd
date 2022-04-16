@@ -20,7 +20,7 @@ The Script downloads subtitles by URL.
 
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import JSONFormatter
-from ytvd.files import save_subtitles
+from files import save_subtitles
 
 
 def get_subtitles(sDir, sFile, sURL, sLang):

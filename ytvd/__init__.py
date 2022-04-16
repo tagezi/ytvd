@@ -20,16 +20,3 @@ YTVD: a very unserious Python library for downloading YouTube Videos. ;)
 __title__ = "YTVD"
 __author__ = "Valerii Goncharuk"
 __license__ = "GPL 3.0"
-
-from ytvd.config import *
-from ytvd.version import __version__
-from ytvd.channel import *
-from ytvd.files import *
-from ytvd.help import *
-from ytvd.playlist import *
-from ytvd.subtitles import *
-from ytvd.video import *
-from ytvd.__main__ import get_action
-
-if __name__ == '__main__':
-    get_action(get_argparser())

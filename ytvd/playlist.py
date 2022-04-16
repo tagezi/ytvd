@@ -18,9 +18,9 @@
 The Script downloads files from specified playlists.
 """
 from pytube import Playlist
-from ytvd.files import get_list, get_dir
-from ytvd.video import get_video
-from ytvd.config import CONFIG
+from files import get_list, get_dir
+from video import get_video
+from config import CONFIG
 
 
 def get_list_playlists(sPlaylistFile, sDir, bSub=False, sLang=''):

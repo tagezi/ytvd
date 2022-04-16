@@ -25,12 +25,12 @@ saved in a directory with the name of the playlist.
 """
 from argparse import ArgumentParser
 
-from ytvd.channel import *
-from ytvd.config import CONFIG
-from ytvd.files import clean_skip_file, get_list, get_dir
-from ytvd.help import get_argparser
-from ytvd.playlist import get_list_playlists, get_playlist_videos
-from ytvd.video import get_list_video, get_video
+from channel import download_videos, get_channel_file, get_channel_videos
+from config import CONFIG
+from files import create_file, get_list, get_dir
+from help import get_argparser
+from playlist import get_list_playlists, get_playlist_videos
+from video import get_list_video, get_video
 
 
 def get_specific_video(oArgs, bSub, sLang):
@@ -122,7 +122,7 @@ def get_action(oParser):
 
     # Parsing known arguments.
     if oArgs.cskip:
-        clean_skip_file()
+        create_file(CONFIG['skip'])
     if oArgs.dsub or oArgs.ssub:
         bSub = True
     if oArgs.schannel or oArgs.plchannel or oArgs.splaylist or oArgs.svideo:

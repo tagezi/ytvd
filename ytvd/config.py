@@ -21,7 +21,7 @@ from os.path import join
 from pathlib import Path
 from sys import platform
 
-from ytvd.files import get_dir
+from files import create_dir, create_file
 
 CONFIG_DIR = 'config'
 YTVD_DIR = 'YTVD'
@@ -29,7 +29,7 @@ if platform.startswith('win32') or platform.startswith('cygwin'):
     CONFIG_PATH = join(str(Path.home()), YTVD_DIR, CONFIG_DIR)
     CONFIG_FILE = join(CONFIG_PATH, 'config.ini')
 else:
-    CONFIG_PATH = join(str(Path.home()), '.local', YTVD_DIR, CONFIG_DIR)
+    CONFIG_PATH = join(str(Path.home()), '.config', YTVD_DIR)
     CONFIG_FILE = join(CONFIG_PATH, 'config.ini')
 
 
@@ -56,13 +56,37 @@ def config_read():
     oConfig.read(CONFIG_FILE)
 
     return {'path': join(str(Path.home()), oConfig['PATH']['path']),
-            'channels': join(CONFIG_PATH, oConfig['FILES']['channel']),
+            'channels': join(CONFIG_PATH, oConfig['FILES']['channels']),
             'playlists': join(CONFIG_PATH, oConfig['FILES']['playlists']),
             'videos': join(CONFIG_PATH, oConfig['FILES']['videos']),
             'skip': join(CONFIG_PATH, oConfig['FILES']['skip'])}
 
 
-CONFIG = config_read()
+def prepare_space():
+    create_dir(CONFIG_PATH)
+    create_dir(join(str(Path.home()), YTVD_DIR))
+
+    oConfig = ConfigParser()
+    oConfig['PATH'] = {'path': 'YTVD'}
+    oConfig['FILES'] = {'channels': 'channels.ini',
+                        'playlists': 'playlists.ini',
+                        'videos': 'videos.ini',
+                        'skip': 'skipvideos.ini'}
+
+    with open(CONFIG_FILE, 'w') as fConfig:
+        oConfig.write(fConfig)
+
+    create_file(join(CONFIG_PATH, 'channels.ini'))
+    create_file(join(CONFIG_PATH, 'playlists.ini'))
+    create_file(join(CONFIG_PATH, 'videos.ini'))
+    create_file(join(CONFIG_PATH, 'skipvideos.ini'))
+
+
+# Constant with config data.
+try:
+    CONFIG = config_read()
+except KeyError:
+    prepare_space()
 
 if __name__ == '__main__':
-    pass
+    prepare_space()

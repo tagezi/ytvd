@@ -19,7 +19,7 @@ The module provides functions for displaying help and processing arguments.
 """
 
 from argparse import ArgumentParser
-from ytvd.config import CONFIG
+from config import CONFIG
 
 
 def get_argparser():

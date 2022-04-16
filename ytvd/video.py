@@ -19,14 +19,14 @@ The Script downloads videos by URL.
 """
 import socket
 
-from time import sleep
 # it can have matter to use youtube_dl or ytpy
 from pytube import YouTube, exceptions
+from time import sleep
 from urllib.error import HTTPError
 
-from ytvd.config import CONFIG
-from ytvd.files import create_dir, get_list, get_dir, set_skip_video
-from ytvd.subtitles import get_subtitles
+from config import CONFIG
+from files import create_dir, get_list, get_dir, set_skip_video
+from subtitles import get_subtitles
 
 
 def get_list_video(sVideoPath, sVideoDir, sFile, bSub=False, sLang=''):
@@ -89,6 +89,7 @@ def get_video(sURL, sDir, bSub=False, sLang='', iPrefix=0, bRepeat=True):
         oYouTube = YouTube(sURL)
     except exceptions.VideoUnavailable:
         print(f'The video at {sURL} is not available. Skip.')
+        return {'prefix': iPrefix, 'repeat': False}
     else:
         oYouTube.streams.filter(file_extension='mp4')
         oYouStream = oYouTube.streams.get_highest_resolution()
@@ -107,15 +108,16 @@ def get_video(sURL, sDir, bSub=False, sLang='', iPrefix=0, bRepeat=True):
                 get_subtitles(sDir, fFileName, sURL, sLang)
         except socket.error:
             print(f'socket.error: Error of downloading video {sURL}')
+            sleep(10)
         except HTTPError:
             print(f'HTTPError: Error of downloading video {sURL}')
+            sleep(10)
         else:
             bRepeat = False
-            set_skip_video(f'{sURL}\n')
+            set_skip_video(CONFIG['skip'], f'{sURL}\n')
             if iPrefix > 0:
                 iPrefix = iPrefix + 1
-    finally:
-        sleep(15)
+
     return {'prefix': iPrefix, 'repeat': bRepeat}
 
 

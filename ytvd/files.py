@@ -18,13 +18,6 @@
 The module provides functions for working with files and directories.
 """
 import os
-from ytvd.config import CONFIG
-
-
-def clean_skip_file():
-    """ The Function clean file for skipping videos. """
-    with open(CONFIG['skip'], 'w') as fSkipVideo:
-        fSkipVideo.write('')
 
 
 def create_dir(sDir):
@@ -36,6 +29,13 @@ def create_dir(sDir):
     """
     if not os.path.exists(sDir):
         os.makedirs(sDir)
+
+
+def create_file(sPath, sString=''):
+    """ The Function create empty file. It can be used to cleaning skip file
+    of videos."""
+    with open(sPath, 'w') as fFile:
+        fFile.write(sString)
 
 
 def get_list(sFileName):
@@ -86,14 +86,17 @@ def save_subtitles(sDir, sFile, oJOSNSubtitles):
         json_file.write(oJOSNSubtitles)
 
 
-def set_skip_video(sURL):
+def set_skip_video(sFile, sURL):
     """ Function writes video URL in file with a list of files
     which needs skipping.
 
+    :param sFile: The config fFile where stored URLs for skipping video.
+    :type sFile: str
     :param sURL: An URL which need add to the file.
     :type sURL: str
+    :return: None
     """
-    with open(CONFIG['skip'], 'a') as fSkipVideo:
+    with open(sFile, 'a') as fSkipVideo:
         fSkipVideo.write(sURL)
 
 

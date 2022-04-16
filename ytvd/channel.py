@@ -13,35 +13,17 @@
 #
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+"""
+The module represents the main functionality for obtaining information about
+the YouTube channel.
+"""
 from bs4 import BeautifulSoup
 from pytube import Channel
 
-from ytvd.config import CONFIG
-from ytvd.files import get_list, get_dir
-from ytvd.playlist import get_playlist_videos
-from ytvd.video import get_video
-
-
-def get_channel_file(sChannelFile, sDir, sDirVideos, bSub=False, sLang=''):
-    """ The function uses a list from a config file with a list of playlists.
-
-    :param sChannelFile: A name of the file containing a list of channels.
-    :type sChannelFile: str
-    :param sDir: A path to directory where will be downloaded channels.
-    :type sDir: str
-    :param sDirVideos: A path to directory where will be downloaded videos.
-    :type sDirVideos: str
-    :param bSub: Does it need to download subtitles?
-    :type bSub: bool
-    :param sLang: A language of subtitles.
-    :type sLang: str
-    :return: None
-    """
-    lChannelURLs = get_list(sChannelFile)
-    if lChannelURLs:
-        for sChannelURL in lChannelURLs:
-            download_videos(sChannelURL, sDir, sDirVideos, bSub, sLang)
+from config import CONFIG
+from files import get_list, get_dir
+from playlist import get_playlist_videos
+from video import get_video
 
 
 def download_videos(sChannelURL, sDir, sDirVideos, bSub=False, sLang=''):
@@ -64,6 +46,27 @@ def download_videos(sChannelURL, sDir, sDirVideos, bSub=False, sLang=''):
     for sPlaylistURL in lPlaylists:
         get_playlist_videos(sPlaylistURL, sDir, bSub, sLang)
     get_channel_videos(sChannelURL, sDir, sDirVideos, bSub, sLang)
+
+
+def get_channel_file(sChannelFile, sDir, sDirVideos, bSub=False, sLang=''):
+    """ The function uses a list from a config file with a list of playlists.
+
+    :param sChannelFile: A name of the file containing a list of channels.
+    :type sChannelFile: str
+    :param sDir: A path to directory where will be downloaded channels.
+    :type sDir: str
+    :param sDirVideos: A path to directory where will be downloaded videos.
+    :type sDirVideos: str
+    :param bSub: Does it need to download subtitles?
+    :type bSub: bool
+    :param sLang: A language of subtitles.
+    :type sLang: str
+    :return: None
+    """
+    lChannelURLs = get_list(sChannelFile)
+    if lChannelURLs:
+        for sChannelURL in lChannelURLs:
+            download_videos(sChannelURL, sDir, sDirVideos, bSub, sLang)
 
 
 def get_chanel_playlists(sChannelURL):
@@ -89,8 +92,8 @@ def get_chanel_playlists(sChannelURL):
             break
 
     #: In this case, working with giant multi-level JSON as a string is faster
-    #: and more efficient. Looking for all occurrences of a playlistId and take
-    #: the playlist code after it.
+    #: and more efficient. Then to look for all occurrences of a playlistId and
+    #: take the playlist code after it.
     lPlaylists = []
     while sScript.find('playlistId') != -1:
         sCode = sScript.partition('playlistId":"')[2].partition('","')[0]
