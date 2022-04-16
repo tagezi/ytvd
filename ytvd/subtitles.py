@@ -17,12 +17,56 @@
 """
 The Script downloads subtitles by URL.
 """
-
 import xml.etree.ElementTree as ET
 from datetime import timedelta
 from pytube import YouTube
 
 from files import save_subtitles
+
+
+def covert_time(iMsTime):
+    """ The function converts time in milliseconds to string '%H:%M:%S.%f'.
+
+    :param iMsTime: A number of milliseconds.
+    :type iMsTime: int
+    :return: Time as string in '%H:%M:%S.%f' format.
+    :rtype: srt
+    """
+    oTime = timedelta(milliseconds=iMsTime)
+    sTime = oTime.__str__()
+
+    if sTime.find('.') == -1:
+        sTime = f'{sTime}.000'
+
+    if len(sTime.split('.')[1]) > 4:
+        sTime = sTime[:-3]
+
+    if len(sTime.split(':')[1]) < 2:
+        sTime = f'0{sTime}'
+
+    return sTime
+
+
+# In pytube there is bug with converting
+# See: https://github.com/pytube/pytube/issues/1085
+def convert_xml_to_srt(sXMLSub):
+    """ The function converts from XML which is received from PyTube to String.
+
+    :param sXMLSub: The XML as String that PyTube created.
+    :type sXMLSub: str
+    :return: A String that is formatted in SRT style.
+    :rtype: str
+    """
+    dXMLTree = ET.fromstring(sXMLSub)
+    iNumSub = 1
+    sSub = ''
+    for dTagP in dXMLTree.iter('p'):
+        sStartTime = covert_time(int(dTagP.attrib["t"]))
+        sEndTime = covert_time(int(dTagP.attrib["t"]) + int(dTagP.attrib["d"]))
+        sSub = f'{sSub}{iNumSub}\n{sStartTime}' \
+               f' --> {sEndTime}\n{dTagP.text}\n\n'
+        iNumSub += 1
+    return sSub
 
 
 def get_subtitles(sDir, sFile, oYouTube, sLang='en'):
@@ -38,37 +82,5 @@ def get_subtitles(sDir, sFile, oYouTube, sLang='en'):
     :return: None
     """
     oCaptions = oYouTube.captions[sLang]
-    # In pytube there is bug with converting
-    # See: https://github.com/pytube/pytube/issues/1085
     sSub = convert_xml_to_srt(oCaptions.xml_captions)
     save_subtitles(sDir, sFile, sSub)
-
-
-def convert_xml_to_srt(sXMLSub):
-    dXMLTree = ET.fromstring(sXMLSub)
-    iNumSub = 1
-    sSub = ''
-    for dTagP in dXMLTree.iter('p'):
-        sStartTime = covert_time(int(dTagP.attrib["t"]))
-        sEndTime = covert_time(int(dTagP.attrib["t"]) + int(dTagP.attrib["d"]))
-        sSub = f'{sSub}{iNumSub}\n{sStartTime}' \
-               f' --> {sEndTime}\n{dTagP.text}\n\n'
-        iNumSub += 1
-    return sSub
-
-
-def covert_time(iMsTime):
-    oTime = timedelta(milliseconds=iMsTime)
-    sTime = oTime.__str__()
-
-    if sTime.find('.') == -1:
-        sTime = f'{sTime}.000'
-
-    if len(sTime.split('.')[1]) > 4:
-        sTime = sTime[:-3]
-
-    if len(sTime.split(':')[1]) < 2:
-        sTime = f'0{sTime}'
-
-    return sTime
-
