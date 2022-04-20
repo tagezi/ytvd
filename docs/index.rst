@@ -7,9 +7,6 @@
 YTVD's documentation
 =====================
 
-.. image:: https://img.shields.io/pypi/pyversions/pytube.svg
-  :alt: Python Versions
-  :target: https://pypi.python.org/pypi/pytube/
 
 YTVD is YouTube Video Downloader
 ================================
