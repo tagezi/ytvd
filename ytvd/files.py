@@ -18,6 +18,7 @@
 The module provides functions for working with files and directories.
 """
 import os
+from pathlib import Path
 
 
 def create_dir(sDir):
