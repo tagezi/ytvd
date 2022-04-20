@@ -25,7 +25,6 @@ class TestPEP8(unittest.TestCase):
         """ Test that lib and unittest modules conform to PEP8. """
         oStyle = pycodestyle.StyleGuide()
         result = oStyle.check_files(['./',
-                                     '../config/',
                                      '../ytvd/'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
