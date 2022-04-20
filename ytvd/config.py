@@ -197,7 +197,7 @@ def prepare_space():
 
 
 PROG_NAME = 'YTVD'
-CONFIG_DIR = 'config'
+CONFIG_DIR = ''
 # Constant with config data.
 try:
     CONFIG = config_read()

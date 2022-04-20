@@ -56,8 +56,7 @@ By default, the files for configuring automation are named:
 * channels.ini - file for channel list
 * playlists.ini - file for playlist list
 * videos.ini  - file for playlist list
-* skipvideos.ini - a file to remember downloaded videos and prevent them from
-being downloaded again.
+* skipvideos.ini - a file to remember downloaded videos.
 
 You can press Enter for default, or specify wishful name.
 

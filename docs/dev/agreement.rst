@@ -10,19 +10,9 @@ Code documentation
 Constants
 =========
 
-These
+PROG_NAME = YTVD
 
-.. autodata:: config.config.CONFIG_PATH
-
-.. autodata:: config.config.VIDEO_PATH
-
-.. autodata:: config.config.CHANNELS_FILE
-
-.. autodata:: config.config.PLAYLIST_FILE
-
-.. autodata:: config.config.VIDEOS_FILE
-
-.. autodata:: config.config.VIDEO_SKIP_FILES
+CONFIG_DIR = ''
 
 Function
 ========
