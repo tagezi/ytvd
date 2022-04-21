@@ -89,6 +89,8 @@ def config_path():
     return CONFIG_PATH, CONFIG_FILE
 
 
+# TODO: Move the validation of file and directory names into a separate
+#  function so that it can be tested by unittests.
 def prepare_space():
     """ Allows a user to specify the paths and file names that will be used
     when the program is running.

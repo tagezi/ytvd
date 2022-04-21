@@ -33,6 +33,9 @@ from playlist import get_list_playlists, get_playlist_videos
 from video import get_list_video, get_video
 
 
+# TODO: After developing a new configuration file, there are many regression
+#  bugs. Needs to be tested and corrected.
+# TODO: Add the ability to keep all links in one automation file.
 def get_specific_video(oArgs, bSub, sLang):
     """ The function processes the url from the command line passed using the
     command line argument.
@@ -63,6 +66,8 @@ def get_specific_video(oArgs, bSub, sLang):
         sDir = get_dir(sVideoPath, sVideoDir)
         lSkipVideo = get_list(CONFIG['skip'])
         dValues = {'prefix': 0, 'repeat': True}
+        # TODO: The code is repeated in different files, you need to move it to
+        #  a separate function
         while dValues['repeat'] and oArgs.svideo not in lSkipVideo:
             dValues = get_video(oArgs.svideo, sDir, bSub, sLang)
 

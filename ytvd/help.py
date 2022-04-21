@@ -22,6 +22,9 @@ from argparse import ArgumentParser
 from config import CONFIG
 
 
+# TODO: Enter the default values from the new configuration file.
+# TODO: Introduce the ability to specify a single file for links, including
+#  channels, playlists and videos.
 def get_argparser():
     """ Creates a description of command line arguments for use and help.
 
