@@ -45,7 +45,7 @@ def get_specific_video(oArgs, bSub, sLang):
     :type sLang: str
     :return: None
     """
-    sVideoPath = CONFIG['path']
+    sVideoPath = CONFIG['rootpath']
     sVideoDir = 'videos'
 
     if oArgs.psave:
