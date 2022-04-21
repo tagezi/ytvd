@@ -111,7 +111,7 @@ def get_action(oParser):
     :param oParser: Argparse object.
     :type oParser: ArgumentParser
     """
-    sVideoPath = CONFIG['path']
+    sVideoPath = CONFIG['rootpath']
     sVideoDir = 'videos'
     sChannelFile = CONFIG['channels']
     sPlaylistFile = CONFIG['playlists']

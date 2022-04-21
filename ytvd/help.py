@@ -70,7 +70,7 @@ def get_argparser():
                          dest="psave",
                          metavar="PATH",
                          nargs='?',
-                         const=CONFIG['path'],
+                         const=CONFIG['rootpath'],
                          type=str,
                          help=sHelp
                          )
