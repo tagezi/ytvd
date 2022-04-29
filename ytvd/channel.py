@@ -20,10 +20,10 @@ the YouTube channel.
 from bs4 import BeautifulSoup
 from pytube import Channel
 
-from config import CONFIG
-from files import get_list, get_dir
-from playlist import get_playlist_videos
-from video import get_video
+from ytvd.config import CONFIG
+from ytvd.files import get_list, get_dir
+from ytvd.playlist import get_playlist_videos
+from ytvd.video import get_video
 
 
 def download_videos(sChannelURL, sDir, sDirVideos, bSub=False, sLang=''):

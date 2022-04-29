@@ -25,12 +25,12 @@ saved in a directory with the name of the playlist.
 """
 from argparse import ArgumentParser
 
-from channel import download_videos, get_channel_file, get_channel_videos
-from config import CONFIG
-from files import create_file, get_list, get_dir
-from help import get_argparser
-from playlist import get_list_playlists, get_playlist_videos
-from video import get_list_video, get_video
+from ytvd.channel import download_videos, get_channel_file, get_channel_videos
+from ytvd.config import CONFIG
+from ytvd.files import create_file, get_list, get_dir
+from ytvd.help import get_argparser
+from ytvd.playlist import get_list_playlists, get_playlist_videos
+from ytvd.video import get_list_video, get_video
 
 
 # TODO: After developing a new configuration file, there are many regression

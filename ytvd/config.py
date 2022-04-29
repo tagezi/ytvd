@@ -14,7 +14,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-The module reads config parameter.
+The module creates and reads config parameter.
 """
 
 import os
@@ -24,10 +24,43 @@ from os.path import join
 from pathlib import Path
 from sys import platform
 
-from files import create_dir, create_file
+from ytvd.files import create_dir, create_file
 
 
-def config_read():
+def check_dirname(sDefaultName, sCheckingName):
+    """ The function check name of directory for compliance with OS rules.
+
+    :param sDefaultName: The name by default.
+    :type sDefaultName: str
+    :param sCheckingName: The name which needs to check.
+    :type sCheckingName: str
+    :return: The name that is according to OS rules or sDefaultName name.
+    :rtype: str
+    """
+    if sCheckingName and not re.search(r'\W', sCheckingName):
+        sDefaultName = sCheckingName
+
+    return sDefaultName
+
+
+def check_filename(sDefaultName, sCheckName):
+    """ The function check name of filename for compliance with OS rules.
+
+    :param sDefaultName: The name by default.
+    :type sDefaultName: str
+    :param sCheckName: The name which needs to check.
+    :type sCheckName: str
+    :return: The name that is according to OS rules or sDefaultName name.
+    :rtype: str
+    """
+    if sCheckName and not re.search(r'[^A-Za-z\d_.]', sCheckName) \
+            and (sCheckName.endswith('.ini') or sCheckName.endswith('.txt')):
+        sDefaultName = sCheckName
+
+    return sDefaultName
+
+
+def config_read(sHome):
     """ The function return values of configuration as dictionary.
 
       *rootpath* - the path to directory where will bw saved video files.
@@ -46,12 +79,14 @@ def config_read():
       *skip* - the path to file where a list with URLs of YouTube videos
       that needs to skip.
 
+    :param sHome: User's Home directory.
+    :type sHome: str
     :return: The dictionaries with keys.
              dict[rootpath, confpath, channels, playlists, videos, skip]
     :rtype: dict
     """
     oConfig = ConfigParser()
-    tMainConfig = config_path()
+    tMainConfig = config_path(sHome)
     oConfig.read(tMainConfig[1])
 
     sRoot = oConfig['PATH']['root']
@@ -71,13 +106,14 @@ def config_read():
             }
 
 
-def config_path():
-    """ Return a path to config file in OD rules.
+def config_path(sHome):
+    """ Return a path to config file in OS rules.
 
+    :param sHome: User's Home directory
+    :type sHome: str
     :return: The path to config file and config file with path.
     :rtype: tuple[str, str]
     """
-    sHome = str(Path.home())
     if platform.startswith('win32') or platform.startswith('cygwin'):
         # For Windows
         CONFIG_PATH = join(sHome, PROG_NAME, CONFIG_DIR)
@@ -89,21 +125,20 @@ def config_path():
     return CONFIG_PATH, CONFIG_FILE
 
 
-# TODO: Move the validation of file and directory names into a separate
-#  function so that it can be tested by unittests.
-def prepare_space():
+def prepare_space(sRootDir):
     """ Allows a user to specify the paths and file names that will be used
     when the program is running.
 
+    :param sRootDir:
+    :type sRootDir: str
     :return: None
     """
-    tMainConfig = config_path()
+    tMainConfig = config_path(sRootDir)
     oConfigFile = Path(tMainConfig[1])
     if oConfigFile.is_file():
         return
 
     sConfDir = CONFIG_DIR
-    sRootDir = str(Path.home())
     sVideoDir = PROG_NAME
     sChannelFile = 'channels.ini'
     sPlaylistFile = 'playlists.ini'
@@ -122,6 +157,7 @@ def prepare_space():
                         f'(hit Enter to default: {sRootDir}): ')
         if sHInput and os.path.exists(sHInput):
             sRootDir = sHInput
+
         print('Use only uppercase and lowercase letters, underscores, and'
               'numbers in file \nand directory names. Give the filename an '
               'extension .ini, please. If the \nname is incorrect, the default'
@@ -129,8 +165,7 @@ def prepare_space():
         sVDir = input('Specify a directory name where you want to upload video'
                       ' files? (hit Enter to default:\n'
                       f' {join(sRootDir, sVideoDir)}: ')
-        if sVDir and not re.search(r'\W', sVDir):
-            sVideoDir = sVDir
+        sVideoDir = check_dirname(sVideoDir, sVDir)
 
         if platform.startswith('win32') or platform.startswith('cygwin'):
             sPath = f'{join(str(Path.home()), PROG_NAME, "config")}'
@@ -142,39 +177,29 @@ def prepare_space():
             sCDir = input(f'Specify a directory name where you want to story'
                           f' others config \nfiles of lists? (hit Enter to'
                           f' default: {sPath}): ')
-
-            if sCDir and not re.search(r'\W', sCDir):
-                sConfDir = sCDir
+            sConfDir = check_dirname(sConfDir, sCDir)
 
         sPath = f'{join(sRootDir, sVideoDir, "config")}'
         print(f'A list file of channel urls is storage in {sPath}')
         sCFile = input(f'Specify the filename (hit Enter to default: '
                        f'{sChannelFile}): ')
-
-        if sCFile and not re.search(r'[^A-Za-z\d_\.]', sCFile):
-            sChannelFile = sCFile
+        sChannelFile = check_filename(sChannelFile, sCFile)
 
         sPFile = input(f'Specify a file name of a playlist list.\n'
                        f'(hit Enter to default: {sPlaylistFile}): ')
-
-        if sPFile and not re.search(r'[^A-Za-z\d_\.]', sPFile):
-            sPlaylistFile = sPFile
+        sPlaylistFile = check_filename(sPlaylistFile, sPFile)
 
         sVFile = input(f'Specify a file name of a video list.\n'
                        f'(hit Enter to default: {sVideoFile}): ')
-
-        if sVFile and not re.search(r'[^A-Za-z\d_\.]', sVFile):
-            sVideoFile = sVFile
+        sVideoFile = check_filename(sVideoFile, sVFile)
 
         print('You probably don\'t need to directly tamper with the file to '
               'skip the video.')
         sSFile = input('But you can specify its name'
                        f'(hit Enter to default: {sSkipVideoFile}):\n')
+        sSkipVideoFile = check_filename(sSkipVideoFile, sSFile)
 
-        if sSFile and not re.search(r'[^A-Za-z\d_\.]', sSFile):
-            sSkipVideoFile = sSFile
-
-    tMainConfig = config_path()
+    tMainConfig = config_path(sRootDir)
 
     create_dir(tMainConfig[0])
     create_dir(join(sRootDir, sVideoDir))
@@ -200,9 +225,10 @@ def prepare_space():
 
 PROG_NAME = 'YTVD'
 CONFIG_DIR = ''
+HOME_PATH = str(Path.home())
 # Constant with config data.
 try:
-    CONFIG = config_read()
+    CONFIG = config_read(HOME_PATH)
 except KeyError:
-    prepare_space()
-    CONFIG = config_read()
+    prepare_space(HOME_PATH)
+    CONFIG = config_read(HOME_PATH)

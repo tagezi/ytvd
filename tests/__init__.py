@@ -13,29 +13,3 @@
 #
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-""" The main module for UnitTest. Runs all tests for the program. """
-import unittest
-
-from ut_pep8 import TestPEP8
-from ut_config import TestConfig
-
-
-def suite():
-    """ Collects all tests from other modules for them running here.
-
-    :return: Object of TestSuit class
-    """
-    oSuite = unittest.TestSuite()
-    oSuite.addTest(unittest.makeSuite(TestPEP8))
-    oSuite.addTest(TestConfig('test_check_dirname'))
-    oSuite.addTest(TestConfig('test_check_filename'))
-    oSuite.addTest(TestConfig('test_config_path'))
-    oSuite.addTest(TestConfig('test_prepare_space'))
-    oSuite.addTest(TestConfig('test_config_read'))
-
-    return oSuite
-
-
-if __name__ == '__main__':
-    unittest.TextTestRunner(verbosity=2).run(suite())

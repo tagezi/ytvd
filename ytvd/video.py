@@ -24,9 +24,9 @@ from pytube import YouTube, exceptions
 from time import sleep
 from urllib.error import HTTPError
 
-from config import CONFIG
-from files import create_dir, get_list, get_dir, set_skip_video
-from subtitles import get_subtitles
+from ytvd.config import CONFIG
+from ytvd.files import create_dir, get_list, get_dir, set_skip_video
+from ytvd.subtitles import get_subtitles
 
 
 def get_list_video(sVideoPath, sVideoDir, sFile, bSub=False, sLang=''):

@@ -31,7 +31,7 @@ class TestPEP8(unittest.TestCase):
 
     def test_main_module_pep8_style(self):
         """ Test that main module conform to PEP8. """
-        for sFile in os.listdir('../'):
+        for sFile in os.listdir('../../ytvd/'):
             sTestFile = sFile.endswith('.py')
             if sTestFile:
                 oStyle = pycodestyle.StyleGuide()
